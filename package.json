@@ -1,0 +1,32 @@
+{
+      "name"                        : "permissions-service"
+    , "description"                 : "Permissions Service for Distributed"
+    , "version"                     : "1.0.0"
+    , "homepage"                    : "https://github.com/distributed-systems/permissions-service"
+    , "author"                      : "Michael van der Weg <michael@joinbox.com> (http://joinbox.com/)"
+    , "repository": {
+          "url"                     : "https://github.com/distributed-systems/permissions-service.git"
+        , "type"                    : "git"
+    }
+    , "engines": {
+        "node"                      : ">=4"
+    }
+    , "bugs": {
+        "url"                       : "https://github.com/distributed-systems/permissions-service/issues"
+    }
+    , "dependencies": {
+          "ee-types"                : "2.x"
+        , "ee-log"                  : "1.x"
+        , "related"                 : "2.x"
+        , "related-timestamps"      : "2.x"
+        , "distributed-prototype"   : "1.x"
+    }
+    , "devDependencies": {
+          "mocha"                   : "2.x"
+    }
+    , "optionalDependencies": {}
+    , "keywords"                    : []
+    , "scripts": {
+        "test"                      : "./node_modules/mocha/bin/mocha --reporter spec"
+    }
+}
