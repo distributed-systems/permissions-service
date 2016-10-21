@@ -114,6 +114,24 @@
             on delete restrict
     );
 
+    create table "group_role" (
+          "id_role"                     int not null
+        , "id_group"                    int not null
+        , constraint "group_role_pk"
+            primary key ("id_role", "id_group")
+        , constraint "group_role_fk_role"
+            foreign key ("id_role")
+            references "role"("id")
+            on update cascade
+            on delete restrict
+        , constraint "group_role_fk_group"
+            foreign key ("id_group")
+            references "group"("id")
+            on update cascade
+            on delete restrict
+    );
+
+
 
 
 
@@ -179,7 +197,7 @@
         , constraint "resource_pk"
             primary key ("id")
         , constraint "resource_unique_identifier"
-            unique ("identifier")
+            unique ("identifier", "id_service")
         , constraint "resource_capability_fk_service"
             foreign key ("id_service")
             references "service"("id")
@@ -328,4 +346,20 @@
             references "action"("id")
             on update cascade
             on delete restrict
+    );
+
+
+
+
+    create table "devAuthentication" (
+          "id"                          serial not null
+        , "password"                    varchar(100) not null
+        , "identifier"                  varchar(199) not null
+        , "created"                     timestamp without time zone not null default now()
+        , "updated"                     timestamp without time zone not null default now()
+        , "deleted"                     timestamp without time zone
+        , constraint "devAuthentication_pk"
+            primary key ("id")
+        , constraint "devAuthentication_unique_identifier"
+            unique ("identifier")
     );

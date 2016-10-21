@@ -76,9 +76,9 @@
 
                         return new this.db.accessToken({
                               subject: subject
-                            , expires: request.data.expires || new Date(new Date().setMonth(new Date().getMonth()+1))
+                            , expires: (request.data.type === 'service' ? (request.data.expires || new Date(new Date().setMonth(new Date().getMonth()+1))) : null)
                             , token: token
-                        });
+                        }).save();
                     }).then((accessToken) => {
 
 

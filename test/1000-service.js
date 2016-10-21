@@ -1,5 +1,8 @@
 (function() {
     'use strict';
+    // donj't restrict permissions
+    process.env.allowAll = true;
+    //process.env.learnPermissions = true;
 
     // donj't restrict permissions
     process.env.allowAll = true;

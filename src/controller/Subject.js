@@ -55,17 +55,22 @@
 
                     // check for the subject
                     return transaction.subject({
-                          subjectType: subjectType
-                        , subjectId: request.data.id
+                          subjectType   : subjectType
+                        , subjectId     : request.data.id
                     }).findOne().then((subject) => {
                         if (subject) return Promise.resolve(subject);
                         else return new transaction.subject({subjectType: subjectType, subjectId: request.data.id}).save();
                     }).then((subject) => {
 
 
-                        // commit
-                        return transaction.commit().then(() => {
-                            response.created(subject.id);
+                        // add the role
+                        if (!subject.group.some(g => g.identifier === group.identifier)) subject.group.push(group);
+                        return subject.save().then(() => {
+
+                            // commit
+                            return transaction.commit().then(() => {
+                                response.created(subject.id);
+                            });
                         });
                     });
                 });

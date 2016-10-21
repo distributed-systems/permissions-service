@@ -13,6 +13,8 @@
     const Authorization     = require('./controller/Authorization');
     const AccessToken       = require('./controller/AccessToken');
     const Subject           = require('./controller/Subject');
+    const Role              = require('./controller/Role');
+    const ServiceToken      = require('./controller/ServiceToken');
 
 
 
@@ -48,7 +50,6 @@
             this.autoLoad('permission');
             this.autoLoad('rateLimit');
             this.autoLoad('resource');
-            this.autoLoad('role');
             this.autoLoad('rowRestriction');
             this.autoLoad('service');
             this.autoLoad('subjectType');
@@ -91,6 +92,8 @@
             this.registerResource('authorization', new Authorization(this.resourceControllerOptions));
             this.registerResource('accessToken', new AccessToken(this.resourceControllerOptions));
             this.registerResource('subject', new Subject(this.resourceControllerOptions));
+            this.registerResource('role', new Role(this.resourceControllerOptions));
+            this.registerResource('serviceToken', new ServiceToken(this.resourceControllerOptions));
 
             return Promise.resolve();
         }
