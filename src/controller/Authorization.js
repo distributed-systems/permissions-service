@@ -50,24 +50,33 @@
 
 
 
-            const roleQuery = this.db.accessToken('*', {
+            const roleQuery = this.db.accessToken('token', {
                   token: request.resourceId
                 , expires: this.Related.or(null, this.Related.gt(new Date()))
             }).getSubject('*')
-                .fetchSubjectType('*')
-                .getGroup('*')
-                .getRole('*');
+                .fetchSubjectType('identifier')
+                .getGroup('identifier')
+                .getRole('identifier');
 
             roleQuery.getCapability('*');
             roleQuery.getRateLimit('*');
 
             const permissionQuery = roleQuery.getPermission('*');
 
-            permissionQuery.getResource('*').filter(resourceFilter)
-                .getService('*').filter(serviceFilter);
+            permissionQuery.getResource('identifier').filter(resourceFilter)
+                .getService('identifier').filter(serviceFilter);
 
 
-            permissionQuery.getAction('*').filter(actionFilter)
+            permissionQuery.getAction('identifier').filter(actionFilter)
+
+
+            // row restrictions
+            roleQuery.getRowRestriction('*')
+                .fetchValueType('identifier')
+                .fetchComparator('identifier')
+                .fetchAction('identifier', actionFilter)
+                .fetchResource('identifier', resourceFilter);
+
 
 
             roleQuery.raw().findOne().then((token) => {
@@ -84,6 +93,7 @@
                                 , roles         : []
                                 , permissions   : []
                                 , capabilities  : []
+                                , restrictions  : []
                             };
 
                             if (token.subject.group) {
@@ -118,6 +128,22 @@
                                                     , currentValue  : role.rateLimit.currentValue
                                                 };
                                             }
+
+
+                                            if (role.rowRestriction) {
+                                                role.rowRestriction.forEach((restriction) => {
+                                                    data.restrictions.push({
+                                                          valueType     : restriction.valueType.identifier
+                                                        , value         : restriction.value
+                                                        , property      : restriction.property
+                                                        , comparator    : restriction.comparator.identifier
+                                                        , nullable      : restriction.nullable
+                                                        , global        : restriction.global
+                                                        , resources     : restriction.resource.map(r => r.identifier)
+                                                        , actions       : restriction.action.map(a => a.identifier)
+                                                    });
+                                                });
+                                            }
                                         });
                                     }
                                 });
@@ -129,7 +155,7 @@
                 } catch (err) {
                     return Promise.reject(err);
                 }
-            }).catch(log);
+            }).catch(err => response.error('authorization_error', `Failed to load authorization for the token ${request.resourceId}!`, err));
         }
 
 
@@ -161,54 +187,51 @@
         createOne(request, response) {
 
 
-            const transaction = this.db.createTransaction();
-
-
             // try to load role from db, create it
             // if required
-            transaction.role({
+            this.db.role({
                 identifier: request.data.role
             }).findOne().then((role) => {
                 if (role) return Promise.resolve(role);
-                else return new transaction.role({identifier: request.data.role}).save();
+                else return new this.db.role({identifier: request.data.role}).save();
             }).then((role) => {
 
 
                 // check for the service
-                return transaction.service({
+                return this.db.service({
                     identifier: request.data.service
                 }).findOne().then((service) => {
                     if (service) return Promise.resolve(service);
-                    else return new transaction.service({identifier: request.data.service}).save();
+                    else return new this.db.service({identifier: request.data.service}).save();
                 }).then((service) => {
 
 
                     // check for the resource
-                    return transaction.resource({
+                    return this.db.resource({
                           identifier: request.data.resource
                         , service: service
                     }).findOne().then((resource) => {
                         if (resource) return Promise.resolve(resource);
-                        else return new transaction.resource({identifier: request.data.resource, service: service}).save();
+                        else return new this.db.resource({identifier: request.data.resource, service: service}).save();
                     }).then((resource) => {
 
 
                         // the action
-                        return transaction.action({
+                        return this.db.action({
                             identifier: request.data.action
                         }).findOne().then((action) => {
                             if (action) return Promise.resolve(action);
-                            else return new transaction.action({identifier: request.data.action}).save();
+                            else return new this.db.action({identifier: request.data.action}).save();
                         }).then((action) => {
 
 
                             // the permission
-                            return transaction.permission({
+                            return this.db.permission({
                                   action: action
                                 , resource: resource
                             }).getRole('*').findOne().then((permission) => {
                                 if (permission) return Promise.resolve(permission);
-                                else return new transaction.permission({action: action, resource: resource}).save();
+                                else return new this.db.permission({action: action, resource: resource}).save();
                             }).then((permission) => {
 
 
@@ -216,11 +239,8 @@
                                 if (!permission.role.some(r => r.identifier === role.identifier)) permission.role.push(role);
                                 return permission.save().then(() => {
 
-                                    // commit
-                                    return transaction.commit().then(() => {
 
-                                        response.created(permission.id);
-                                    });
+                                    response.created(permission.id);
                                 });
                             });
                         });

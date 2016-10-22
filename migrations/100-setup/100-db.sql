@@ -348,6 +348,23 @@
             on delete restrict
     );
 
+    create table "role_rowRestriction" (
+          "id_role"                     int not null
+        , "id_rowRestriction"           int not null
+        , constraint "role_rowRestriction_pk"
+            primary key ("id_role", "id_rowRestriction")
+        , constraint "role_rowRestriction_fk_role"
+            foreign key ("id_role")
+            references "role"("id")
+            on update cascade
+            on delete restrict
+        , constraint "role_rowRestriction_fk_rowRestriction"
+            foreign key ("id_rowRestriction")
+            references "rowRestriction"("id")
+            on update cascade
+            on delete restrict
+    );
+
 
 
 
