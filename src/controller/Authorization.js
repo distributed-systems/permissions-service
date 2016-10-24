@@ -54,7 +54,7 @@
                   token: request.resourceId
                 , expires: this.Related.or(null, this.Related.gt(new Date()))
             }).getSubject('*')
-                .fetchSubjectType('identifier')
+                .fetchSubjectType(['*'])
                 .getGroup('identifier')
                 .getRole('identifier');
 
@@ -71,11 +71,12 @@
 
 
             // row restrictions
-            roleQuery.getRowRestriction('*')
+            const restrictionQuery = roleQuery.getRowRestriction('*')
                 .fetchValueType('identifier')
-                .fetchComparator('identifier')
-                .fetchAction('identifier', actionFilter)
-                .fetchResource('identifier', resourceFilter);
+                .fetchComparator('identifier');
+
+            restrictionQuery.getAction('identifier').filter(actionFilter);
+            restrictionQuery.getResource('identifier').filter(resourceFilter);
 
 
 
@@ -117,7 +118,7 @@
 
 
                                             if (role.capability) {
-                                                role.capability.forEach(c => role.capabilities.push(c.identifier));
+                                                role.capability.forEach(c => data.capabilities.push(c.identifier));
                                             }
 
                                             if (role.rateLimit) {
@@ -164,18 +165,20 @@
 
 
 
-        collectSubjectInfo(subject) { return Promise.resolve({userId: 1});
-            return new RelationalRequest({
-                  action        : 'listOne'
-                , service       : subject.subjectType.service
-                , resource      : subject.subjectType.resource
-                , resourceId    : subject.subjectId
-            }).send(this).then((response) => {
-                if (response.status === 'ok') {
-                    if (response.hasObjectData()) return Promise.resolve(response.data);
-                    else return Promise.resolve({});
-                } else return Promise.reject(new Error(`Failed to load subject info from ${subject.subjectType.service}/${subject.subjectType.resource} for subject ${subject.subjectType.identifier}:${subject.subjectId}!`));
-            });
+        collectSubjectInfo(subject) {
+            if (subject.subjectType.fetchInfo) {
+                return new RelationalRequest({
+                      action        : 'listOne'
+                    , service       : subject.subjectType.service
+                    , resource      : subject.subjectType.resource
+                    , resourceId    : subject.subjectId
+                }).send(this).then((response) => { //log(response);
+                    if (response.status === 'ok') {
+                        if (response.hasObjectData()) return Promise.resolve(response.data);
+                        else return Promise.resolve({});
+                    } else return Promise.reject(new Error(`Failed to load subject info from ${subject.subjectType.service}/${subject.subjectType.resource} for subject ${subject.subjectType.identifier}:${subject.subjectId}!`));
+                });
+            } else return Promise.resolve({});
         }
 
 

@@ -89,11 +89,11 @@
 
 
         afterLoad() {
-            this.registerResource('authorization', new Authorization(this.resourceControllerOptions));
-            this.registerResource('accessToken', new AccessToken(this.resourceControllerOptions));
-            this.registerResource('subject', new Subject(this.resourceControllerOptions));
-            this.registerResource('role', new Role(this.resourceControllerOptions));
-            this.registerResource('serviceToken', new ServiceToken(this.resourceControllerOptions));
+            this.registerResource(new Authorization(this.resourceControllerOptions));
+            this.registerResource(new AccessToken(this.resourceControllerOptions));
+            this.registerResource(new Subject(this.resourceControllerOptions));
+            this.registerResource(new Role(this.resourceControllerOptions));
+            this.registerResource(new ServiceToken(this.resourceControllerOptions));
 
             return Promise.resolve();
         }

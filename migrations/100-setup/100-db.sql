@@ -27,6 +27,7 @@
         , "identifier"                  varchar(50) not null
         , "service"                     varchar(200) not null
         , "resource"                    varchar(200) not null
+        , "fetchInfo"                   boolean not null default false
         , constraint "subjectType_pk"
             primary key ("id")
         , constraint "subjectType_unique_identifier"

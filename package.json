@@ -19,10 +19,10 @@
         , "ee-log"                  : "1.x"
         , "related"                 : "2.x"
         , "related-timestamps"      : "2.x"
-        , "distributed-prototype"   : "1.x"
+        , "distributed-prototype"   : "2.x"
     }
     , "devDependencies": {
-          "mocha"                   : "2.x"
+          "mocha"                   : "3.x"
     }
     , "optionalDependencies": {}
     , "keywords"                    : []
