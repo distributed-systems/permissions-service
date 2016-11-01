@@ -80,7 +80,7 @@
 
 
 
-            roleQuery.raw().findOne().then((token) => {
+            roleQuery.raw().findOne().then((token) => {//log(token);
                 try {
                     if (token && token.subject) {
 
@@ -96,6 +96,7 @@
                                 , capabilities  : []
                                 , restrictions  : []
                             };
+
 
                             if (token.subject.group) {
                                 token.subject.group.forEach((group) => {
@@ -130,25 +131,27 @@
                                                 };
                                             }
 
-
                                             if (role.rowRestriction) {
                                                 role.rowRestriction.forEach((restriction) => {
-                                                    data.restrictions.push({
-                                                          valueType     : restriction.valueType.identifier
-                                                        , value         : restriction.value
-                                                        , property      : restriction.property
-                                                        , comparator    : restriction.comparator.identifier
-                                                        , nullable      : restriction.nullable
-                                                        , global        : restriction.global
-                                                        , resources     : restriction.resource.map(r => r.identifier)
-                                                        , actions       : restriction.action.map(a => a.identifier)
-                                                    });
+                                                    if (restriction.resource && restriction.resource.length && restriction.action && restriction.action.length) {
+                                                        data.restrictions.push({
+                                                              valueType     : restriction.valueType.identifier
+                                                            , value         : restriction.value
+                                                            , property      : restriction.property
+                                                            , comparator    : restriction.comparator.identifier
+                                                            , nullable      : restriction.nullable
+                                                            , global        : restriction.global
+                                                            , resources     : restriction.resource.map(r => r.identifier)
+                                                            , actions       : restriction.action.map(a => a.identifier)
+                                                        });
+                                                    }
                                                 });
                                             }
                                         });
                                     }
                                 });
                             }
+
 
                             response.ok([data]);
                         });
