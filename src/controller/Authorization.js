@@ -178,7 +178,7 @@
 
         collectSubjectInfo(subject) {
             if (subject.subjectType.fetchInfo) {
-                const cacheId = `${subject.subjectType.service}/${subject.subjectType.resource}:${subject.subjectType.service}`;
+                const cacheId = `${subject.subjectType.service}/${subject.subjectType.resource}:${subject.subjectId}`;
 
                 if (this.infoCache.has(cacheId)) return Promise.resolve(this.infoCache.get(cacheId));
                 else {
