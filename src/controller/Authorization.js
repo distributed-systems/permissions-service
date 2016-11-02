@@ -8,6 +8,7 @@
 
     const log                   = require('ee-log');
     const type                  = require('ee-types');
+    const Cachd                 = require('cachd');
 
 
 
@@ -24,6 +25,13 @@
             // permissions listings
             this.enableAction('listOne');
             this.enableAction('createOne');
+
+            // cache subject info
+            this.infoCache = new Cachd({
+                  ttl: 3600000 // 1h
+                , maxLength: 10000
+                , removalStrategy: 'leastUsed'
+            });
         }
 
 
@@ -170,17 +178,27 @@
 
         collectSubjectInfo(subject) {
             if (subject.subjectType.fetchInfo) {
-                return new RelationalRequest({
-                      action        : 'listOne'
-                    , service       : subject.subjectType.service
-                    , resource      : subject.subjectType.resource
-                    , resourceId    : subject.subjectId
-                }).send(this).then((response) => { //log(response);
-                    if (response.status === 'ok') {
-                        if (response.hasObjectData()) return Promise.resolve(response.data);
-                        else return Promise.resolve({});
-                    } else return Promise.reject(new Error(`Failed to load subject info from ${subject.subjectType.service}/${subject.subjectType.resource} for subject ${subject.subjectType.identifier}:${subject.subjectId}!`));
-                });
+                const cacheId = `${subject.subjectType.service}/${subject.subjectType.resource}:${subject.subjectType.service}`;
+
+                if (this.infoCache.has(cacheId)) return Promise.resolve(this.infoCache.get(cacheId));
+                else {
+                    return new RelationalRequest({
+                          action        : 'listOne'
+                        , service       : subject.subjectType.service
+                        , resource      : subject.subjectType.resource
+                        , resourceId    : subject.subjectId
+                    }).send(this).then((response) => {// log(response);
+                        if (response.status === 'ok') {
+                            if (response.hasObjectData()) {
+                                this.infoCache.set(cacheId, response.data);
+                                return Promise.resolve(response.data);
+                            } else {
+                                this.infoCache.set(cacheId, {});
+                                return Promise.resolve({});
+                            }
+                        } else return Promise.reject(new Error(`Failed to load subject info from ${subject.subjectType.service}/${subject.subjectType.resource} for subject ${subject.subjectType.identifier}:${subject.subjectId}!`));
+                    });
+                }
             } else return Promise.resolve({});
         }
 

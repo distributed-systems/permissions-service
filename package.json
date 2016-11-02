@@ -20,6 +20,7 @@
         , "related"                 : "2.x"
         , "related-timestamps"      : "2.x"
         , "distributed-prototype"   : "2.x"
+        , "cachd"                   : "1.x"
     }
     , "devDependencies": {
           "mocha"                   : "3.x"
