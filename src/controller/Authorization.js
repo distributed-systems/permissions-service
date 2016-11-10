@@ -57,34 +57,45 @@
             }
 
 
-
-            const roleQuery = this.db.accessToken('token', {
+            // subject
+            const subjectQuery = this.db.accessToken('token', {
                   token: request.resourceId
                 , expires: this.Related.or(null, this.Related.gt(new Date()))
-            }).getSubject('*')
-                .fetchSubjectType(['*'])
+            }).getSubject('*');
+
+
+            // roles
+            const roleQuery = subjectQuery.fetchSubjectType('*')
                 .getGroup('identifier')
-                .getRole('identifier');
+                .getRole('identifier')
+                .fetchCapability('identifier');
 
-            roleQuery.getCapability('*');
-            roleQuery.getRateLimit('*');
 
-            const permissionQuery = roleQuery.getPermission('*');
+            // permissions
+            const permissionQuery = roleQuery.getPermission('id');
 
             permissionQuery.getResource('identifier').filter(resourceFilter)
                 .getService('identifier').filter(serviceFilter);
 
-
             permissionQuery.getAction('identifier').filter(actionFilter)
 
 
+
+            // rate limiting
+            roleQuery.getRateLimit(['interval', 'credits']);
+            subjectQuery.getRateLimitBucket(['currentValue', 'updated']);
+
+
+
             // row restrictions
-            const restrictionQuery = roleQuery.getRowRestriction('*')
+            const restrictionQuery = roleQuery.getRowRestriction(['property', 'value', 'nullable', 'global'])
                 .fetchValueType('identifier')
                 .fetchComparator('identifier');
 
             restrictionQuery.getAction('identifier').filter(actionFilter);
             restrictionQuery.getResource('identifier').filter(resourceFilter);
+
+
 
 
 
@@ -106,11 +117,16 @@
                             };
 
 
+                            let rateLimit;
+
+
                             if (token.subject.group) {
                                 token.subject.group.forEach((group) => {
                                     if (group.role) {
                                         group.role.forEach((role) => {
                                             data.roles.push(role.identifier);
+
+                                            if (role.rateLimit && (!rateLimit || role.rateLimit.credits < rateLimit.credits)) rateLimit = role.rateLimit;
 
                                             if (role.permission) {
                                                 role.permission.forEach((permission) => {
@@ -161,14 +177,35 @@
                             }
 
 
+
+                            // check if there is a rateLimit
+                            if (rateLimit) {
+                                data.rateLimit = {
+                                      credits       : rateLimit.credits
+                                    , updated       : null
+                                    , remaining     : null
+                                };
+
+
+                                if (token.subject.rateLimitBucket) {
+                                    data.rateLimit.updated = token.subject.rateLimitBucket.updated;
+                                    data.rateLimit.remaining = token.subject.rateLimitBucket.currentValue;
+                                }
+                            }
+
+
+
                             response.ok([data]);
                         });
                     } else response.ok([]);
-                } catch (err) {
+                } catch (err) { log(err);
                     return Promise.reject(err);
                 }
             }).catch(err => response.error('authorization_error', `Failed to load authorization for the token ${request.resourceId}!`, err));
         }
+
+
+
 
 
 

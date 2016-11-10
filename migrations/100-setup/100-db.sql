@@ -8,18 +8,6 @@
 
 
 
-    create table "rateLimit" (
-          "id"                          serial not null
-        , "interval"                    int not null
-        , "credits"                     int not null
-        , "currentValue"                bigint
-        , "comment"                     text
-        , "created"                     timestamp without time zone not null default now()
-        , "updated"                     timestamp without time zone not null default now()
-        , "deleted"                     timestamp without time zone
-        , constraint "rateLimit_pk"
-            primary key ("id")
-    );
 
 
     create table "subjectType" (
@@ -128,6 +116,48 @@
         , constraint "group_role_fk_group"
             foreign key ("id_group")
             references "group"("id")
+            on update cascade
+            on delete restrict
+    );
+
+
+
+
+
+
+
+
+
+
+    create table "rateLimit" (
+          "id"                          serial not null
+        , "interval"                    int not null
+        , "credits"                     int not null
+        , "comment"                     text
+        , "created"                     timestamp without time zone not null default now()
+        , "updated"                     timestamp without time zone not null default now()
+        , "deleted"                     timestamp without time zone
+        , constraint "rateLimit_pk"
+            primary key ("id")
+    );
+
+    create table "rateLimitBucket" (
+          "id"                          serial not null
+        , "id_rateLimit"                int not null
+        , "id_subject"                  int not null
+        , "currentValue"                bigint
+        , "created"                     timestamp without time zone not null default now()
+        , "updated"                     timestamp without time zone not null default now()
+        , constraint "rateLimitBucket_pk"
+            primary key ("id")
+        , constraint "rateLimitBucket_fk_rateLimit"
+            foreign key ("id_rateLimit")
+            references "rateLimit"("id")
+            on update cascade
+            on delete restrict
+        , constraint "rateLimitBucket_fk_subject"
+            foreign key ("id_subject")
+            references "subject"("id")
             on update cascade
             on delete restrict
     );

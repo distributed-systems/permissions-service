@@ -15,6 +15,7 @@
     const Subject           = require('./controller/Subject');
     const Role              = require('./controller/Role');
     const ServiceToken      = require('./controller/ServiceToken');
+    const RateLimit         = require('./controller/RateLimit');
 
 
 
@@ -48,7 +49,6 @@
             this.autoLoad('comparator');
             this.autoLoad('group');
             this.autoLoad('permission');
-            this.autoLoad('rateLimit');
             this.autoLoad('resource');
             this.autoLoad('rowRestriction');
             this.autoLoad('service');
@@ -94,6 +94,7 @@
             this.registerResource(new Subject(this.resourceControllerOptions));
             this.registerResource(new Role(this.resourceControllerOptions));
             this.registerResource(new ServiceToken(this.resourceControllerOptions));
+            this.registerResource(new RateLimit(this.resourceControllerOptions));
 
             return Promise.resolve();
         }
