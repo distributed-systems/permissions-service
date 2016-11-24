@@ -23,6 +23,7 @@
             this.Related = options.Related;
 
             // permissions listings
+            this.enableAction('list');
             this.enableAction('listOne');
             this.enableAction('createOne');
 
@@ -40,6 +41,113 @@
 
 
 
+        list(request, response, permissions) {
+
+            Promise.all(permissions.external().getTokens().map((token) => {
+                return new RelationalRequest({
+                      service   : this.getServiceName()
+                    , resource  : this.getName()
+                    , resourceId: token
+                    , action    : 'listOne'
+                }).send(this).then((subResponse) => {
+                    if (subResponse.status === 'ok') return Promise.resolve(subResponse.data);
+                    else return Promise.reject(new Error(`Failed to load authorization, the remote enpoint responded with the status ${subResponse.status}: subResponse.message`));
+                });
+            })).then((permissionsList) => {
+
+                // flatten the array
+                const list = [];
+                permissionsList.forEach(l => l.forEach(i => list.push(i)));
+
+
+
+                // get selections
+                const loadPermissions   = request.hasSelection('permissions');
+                const loadRoles         = request.hasSelection('roles');
+                const loadCapabilities  = request.hasSelection('capabilities');
+                const loadData          = request.hasSelection('data');
+
+                const data = new Map();
+                const roles = new Set();
+                const permissions = new Map();
+                const restrictions = new Map();
+                const capabilities = new Map();
+
+
+                list.forEach((permission) => {
+                    if (loadData && permission.data) {
+                        Object.keys(permission.data).forEach((key) => {
+                            data.set(key, permission.data[key]);
+                        });
+                    }
+
+
+                    if (loadRoles && permission.roles) {
+                        permission.roles.forEach((role) => {
+                            roles.add(role);
+                        });
+                    }
+
+
+                    if (loadPermissions && permission.permissions) {
+                        permission.permissions.forEach((item) => {
+                            if (!permissions.has(item.service)) permissions.set(item.service, new Map());
+                            const service = permissions.get(item.service);
+
+                            if (!service.has(item.resource)) service.set(item.resource, new Map());
+                            const resource = service.get(item.resource);
+
+                            resource.set(item.action, resource.has(item.action) && esource.get(item.action) || item.allowed);
+                        });
+                    }
+
+
+                    if (loadCapabilities && permission.capabilities) {
+                        permission.capabilities.forEach((capability) => {
+                            capabilities.add(capability);
+                        });
+                    }
+                });
+
+
+                const result = {
+                      roles         : Array.from(roles)
+                    , capabilities  : Array.from(capabilities)
+                    , data: {}
+                    , permissions: []
+                };
+
+
+                for (const key of data.keys()) result.data[key] = data.get(key);
+
+                for (const serviceName of permissions.keys()) {
+                    const svc = permissions.get(serviceName);
+
+                    for (const resourceName of svc.keys()) {
+                        const rsc = svc.get(resourceName);
+
+                        for (const action of rsc.keys()) {
+                            result.permissions.push({
+                                  service   : serviceName
+                                , resource  : resourceName
+                                , action    : action
+                                , allowed   : rsc.get(action)
+                            });
+                        }
+                    }
+                }
+
+
+                response.ok(result);
+            }).catch(err => response.error('remote_gateway_error', `Failed to get status: ${err.message}!`, err));
+        }
+
+
+
+
+
+
+
 
         listOne(request, response) {
             const serviceFilter     = {};
@@ -47,7 +155,8 @@
             const actionFilter      = {};
 
 
-            if (!type.string(request.resourceId) || request.resourceId.length !== 64) response.forbidden('invlaid_accessToken', `The accesToken provided is invalid!`);
+            if (!type.string(request.resourceId) || request.resourceId.length !== 64) response.forbidden('invalid_accessToken', `The accesToken provided is invalid!`);
+
 
 
             if (request.data) {

@@ -30,6 +30,7 @@
         on delete restrict;
 
 
+    drop table "rateLimitBucket";
     create table "rateLimitBucket" (
           "id"                          serial not null
         , "currentValue"                bigint

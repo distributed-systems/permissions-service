@@ -85,46 +85,6 @@
             on delete restrict
     );
 
-    create table "role" (
-          "id"                          serial not null
-        , "id_rateLimit"                int
-        , "identifier"                  varchar(50) not null
-        , "created"                     timestamp without time zone not null default now()
-        , "updated"                     timestamp without time zone not null default now()
-        , "deleted"                     timestamp without time zone
-        , constraint "role_pk"
-            primary key ("id")
-        , constraint "role_unique_identifier"
-            unique ("identifier")
-        , constraint "role_fk_rateLimit"
-            foreign key ("id_rateLimit")
-            references "rateLimit"("id")
-            on update cascade
-            on delete restrict
-    );
-
-    create table "group_role" (
-          "id_role"                     int not null
-        , "id_group"                    int not null
-        , constraint "group_role_pk"
-            primary key ("id_role", "id_group")
-        , constraint "group_role_fk_role"
-            foreign key ("id_role")
-            references "role"("id")
-            on update cascade
-            on delete restrict
-        , constraint "group_role_fk_group"
-            foreign key ("id_group")
-            references "group"("id")
-            on update cascade
-            on delete restrict
-    );
-
-
-
-
-
-
 
 
 
@@ -161,6 +121,46 @@
             on update cascade
             on delete restrict
     );
+
+
+
+
+
+    create table "role" (
+          "id"                          serial not null
+        , "id_rateLimit"                int
+        , "identifier"                  varchar(50) not null
+        , "created"                     timestamp without time zone not null default now()
+        , "updated"                     timestamp without time zone not null default now()
+        , "deleted"                     timestamp without time zone
+        , constraint "role_pk"
+            primary key ("id")
+        , constraint "role_unique_identifier"
+            unique ("identifier")
+        , constraint "role_fk_rateLimit"
+            foreign key ("id_rateLimit")
+            references "rateLimit"("id")
+            on update cascade
+            on delete restrict
+    );
+
+    create table "group_role" (
+          "id_role"                     int not null
+        , "id_group"                    int not null
+        , constraint "group_role_pk"
+            primary key ("id_role", "id_group")
+        , constraint "group_role_fk_role"
+            foreign key ("id_role")
+            references "role"("id")
+            on update cascade
+            on delete restrict
+        , constraint "group_role_fk_group"
+            foreign key ("id_group")
+            references "group"("id")
+            on update cascade
+            on delete restrict
+    );
+
 
 
 
