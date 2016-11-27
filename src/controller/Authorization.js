@@ -159,10 +159,12 @@
 
 
 
+            let serviceName, resourceName, actionName;
+
             if (request.data) {
-                if (request.data.serviceName)   serviceFilter.identifier    = request.data.serviceName;
-                if (request.data.resourceName)  resourceFilter.identifier   = request.data.resourceName;
-                if (request.data.actionName)    actionFilter.identifier     = request.data.actionName;
+                if (request.data.serviceName)   serviceFilter.identifier    = serviceName   = request.data.serviceName;
+                if (request.data.resourceName)  resourceFilter.identifier   = resourceName  = request.data.resourceName;
+                if (request.data.actionName)    actionFilter.identifier     = actionName    = request.data.actionName;
             }
 
 
@@ -201,14 +203,14 @@
                 .fetchValueType('identifier')
                 .fetchComparator('identifier');
 
-            restrictionQuery.getAction('identifier').filter(actionFilter);
-            restrictionQuery.getResource('identifier').filter(resourceFilter);
+            restrictionQuery.getAction('identifier');
+            restrictionQuery.getResource('identifier').getService('identifier');
 
 
 
 
 
-            roleQuery.raw().findOne().then((token) => {//log(token);
+            roleQuery.findOne().then((token) => {//log(token);
                 try {
                     if (token && token.subject) {
 
@@ -266,17 +268,24 @@
 
                                             if (role.rowRestriction) {
                                                 role.rowRestriction.forEach((restriction) => {
+
+                                                    // ther emust be actions an resources
                                                     if (restriction.resource && restriction.resource.length && restriction.action && restriction.action.length) {
-                                                        data.restrictions.push({
-                                                              valueType     : restriction.valueType.identifier
-                                                            , value         : restriction.value
-                                                            , property      : restriction.property
-                                                            , comparator    : restriction.comparator.identifier
-                                                            , nullable      : restriction.nullable
-                                                            , global        : restriction.global
-                                                            , resources     : restriction.resource.map(r => r.identifier)
-                                                            , actions       : restriction.action.map(a => a.identifier)
-                                                        });
+                                                        //log.warn(role.identifier, actionName, serviceName, resourceName, restriction);
+                                                        // the filters must match the actions an resources
+                                                        if ((!actionName || (restriction.action.some(a => a.identifier === actionName))) &&
+                                                            (!resourceName || (restriction.resource.some(r => r.identifier === resourceName && (!serviceName || r.service.identifier === serviceName))))) {
+                                                            data.restrictions.push({
+                                                                  valueType     : restriction.valueType.identifier
+                                                                , value         : restriction.value
+                                                                , property      : restriction.property
+                                                                , comparator    : restriction.comparator.identifier
+                                                                , nullable      : restriction.nullable
+                                                                , global        : restriction.global
+                                                                , resources     : restriction.resource.map(r => r.identifier)
+                                                                , actions       : restriction.action.map(a => a.identifier)
+                                                            });
+                                                        }
                                                     }
                                                 });
                                             }
@@ -293,6 +302,7 @@
                                       credits       : rateLimit.credits
                                     , updated       : null
                                     , remaining     : null
+                                    , interval      : rateLimit.interval
                                 };
 
 
@@ -301,7 +311,6 @@
                                     data.rateLimit.remaining = token.subject.rateLimitBucket.currentValue;
                                 }
                             }
-
 
 
                             response.ok([data]);
