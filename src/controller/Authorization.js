@@ -4,6 +4,7 @@
     const distributed           = require('distributed-prototype');
     const ResourceController    = distributed.ResourceController;
     const RelationalRequest     = distributed.RelationalRequest;
+    const AuthorizationLoader   = require('../lib/AuthorizationLoader');
 
 
     const log                   = require('ee-log');
@@ -27,16 +28,16 @@
             this.enableAction('listOne');
             this.enableAction('createOne');
 
-            // cache subject info
-            this.infoCache = new Cachd({
-                  ttl: 3600000 // 1h
-                , maxLength: 10000
-                , removalStrategy: 'leastUsed'
+            
+            this.authorizationLoader = new AuthorizationLoader({
+                  gateway: this
+                , db: this.db
+                , Related: this.Related
             });
         }
 
 
-
+/*
 
 
 
@@ -143,9 +144,26 @@
         }
 
 
+*/
+
+        listOne(request, response) {
+            const serviceFilter     = {};
+            const resourceFilter    = {};
+            const actionFilter      = {};
+
+
+            if (!type.string(request.resourceId) || request.resourceId.length !== 64) response.forbidden('invalid_accessToken', `The accesToken provided is invalid!`);
+
+
+            this.authorizationLoader.load(request.resourceId).then((permission) => {
+                if (permission) response.ok(Object.assign(permission.getData()));
+                else response.notFound(`Failed to load permissions for ${request.resourceId}!`);
+            }).catch(err => response.error('permission_loader_error', `Failed to load permissions!`, err));
+        }
 
 
 
+/*
 
 
 
@@ -210,7 +228,7 @@
 
 
 
-            roleQuery.findOne().then((token) => {//log(token);
+            roleQuery.findOne().then((token) => {log(token);
                 try {
                     if (token && token.subject) {
 
@@ -331,6 +349,9 @@
 
 
 
+
+
+
         collectSubjectInfo(subject) {
             if (subject.subjectType.fetchInfo) {
                 const cacheId = `${subject.subjectType.service}/${subject.subjectType.resource}:${subject.subjectId}`;
@@ -358,7 +379,7 @@
         }
 
 
-
+*/
 
 
 

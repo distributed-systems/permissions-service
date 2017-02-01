@@ -205,14 +205,16 @@
                 , resourceId: token
             })).then((response) => { //log(response);
                 assert.equal(response.status, 'ok');
-                assert.equal(response.data.length, 1);
-                assert.equal(response.data[0].roles.length, 1);
+                assert(response.data);
+                assert.equal(response.data.roles.length, 1);
 
                 legcyService.cancelIntercept('userInfo');
 
                 done();
             }).catch(done);
         });
+
+
 
 
         it('invalidating all accessTokens for a subject', (done) => {
