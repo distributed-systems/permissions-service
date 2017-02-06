@@ -25,6 +25,7 @@
             this.enableAction('createOne');
             this.enableAction('create');
             this.enableAction('delete');
+            this.enableAction('list');
         }
 
 

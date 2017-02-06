@@ -10,12 +10,12 @@
     const log               = require('ee-log');
 
 
-    const Authorization     = require('./controller/Authorization');
-    const AccessToken       = require('./controller/AccessToken');
-    const Subject           = require('./controller/Subject');
-    const Role              = require('./controller/Role');
-    const ServiceToken      = require('./controller/ServiceToken');
-    const RateLimit         = require('./controller/RateLimit');
+    const Authorization         = require('./controller/Authorization');
+    const FailedAuthorization   = require('./controller/FailedAuthorization');
+    const AccessToken           = require('./controller/AccessToken');
+    const Subject               = require('./controller/Subject');
+    const Role                  = require('./controller/Role');
+    const ServiceToken          = require('./controller/ServiceToken');
 
 
 
@@ -94,7 +94,7 @@
             this.registerResource(new Subject(this.resourceControllerOptions));
             this.registerResource(new Role(this.resourceControllerOptions));
             this.registerResource(new ServiceToken(this.resourceControllerOptions));
-            this.registerResource(new RateLimit(this.resourceControllerOptions));
+            this.registerResource(new FailedAuthorization());
 
             return Promise.resolve();
         }
