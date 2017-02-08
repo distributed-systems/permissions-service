@@ -51,7 +51,7 @@
                 }).catch((err) => {
 
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(cacheId);
 
                     return Promise.reject(err);
                 });
