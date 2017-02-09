@@ -46,14 +46,11 @@
             // autoload its controllers
             this.autoLoad('action');
             this.autoLoad('capability');
-            this.autoLoad('comparator');
             this.autoLoad('group');
             this.autoLoad('permission');
             this.autoLoad('resource');
-            this.autoLoad('rowRestriction');
             this.autoLoad('service');
             this.autoLoad('subjectType');
-            this.autoLoad('valueType');
         }
 
 
