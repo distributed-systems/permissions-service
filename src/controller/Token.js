@@ -16,7 +16,7 @@
 
 
         constructor(options) {
-            super('accessToken');
+            super('token');
 
             // db from the service
             this.db = options.db;
@@ -76,7 +76,7 @@
 
                         return new this.db.accessToken({
                               subject: subject
-                            , expires: (request.data.type === 'service' ? (request.data.expires || new Date(new Date().setMonth(new Date().getMonth()+1))) : null)
+                            , expires: (request.data.type === 'user' ? (request.data.expires || new Date(new Date().setMonth(new Date().getMonth()+6))) : null)
                             , token: token
                         }).save();
                     }).then((accessToken) => {

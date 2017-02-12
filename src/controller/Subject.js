@@ -40,31 +40,38 @@
                 identifier: request.data.type
             }).findOne().then((subjectType) => {
                 if (subjectType) return Promise.resolve(subjectType);
-                else return Promise.reject(`The subject type ${request.data.type} is not registered!`);
+                else return Promise.reject(`The subject type ${request.data.type ? request.data.type : 'undefined'} is not registered!`);
             }).then((subjectType) => {
 
 
-                // check for the group
-                return transaction.group({
-                    identifier: request.data.group
-                }).findOne().then((group) => {
-                    if (group) return Promise.resolve(group);
-                    else return new transaction.group({identifier: request.data.group}).save();
-                }).then((group) => {
+                // check for the group(s)
+                return Promise.all((request.data.groups || [request.data.group]).map((groupName) => {
+                    return transaction.group({
+                        identifier: groupName
+                    }).findOne().then((group) => {
+                        if (group) return Promise.resolve(group);
+                        else return new transaction.group({identifier: groupName}).save();
+                    });
+                })).then((groups) => {
 
 
                     // check for the subject
                     return transaction.subject({
                           subjectType   : subjectType
                         , subjectId     : request.data.id
-                    }).findOne().then((subject) => {
+                    }).getGroup('*').findOne().then((subject) => {
                         if (subject) return Promise.resolve(subject);
                         else return new transaction.subject({subjectType: subjectType, subjectId: request.data.id}).save();
                     }).then((subject) => {
 
 
-                        // add the role
-                        if (!subject.group.some(g => g.identifier === group.identifier)) subject.group.push(group);
+                        // add the groups
+                        groups.forEach((group) => {
+                            if (!subject.group.some(g => g.identifier === group.identifier)) subject.group.push(group);
+                        });
+
+                        
+                        // save shit
                         return subject.save().then(() => {
 
                             // commit

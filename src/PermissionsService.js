@@ -12,7 +12,7 @@
 
     const Authorization         = require('./controller/Authorization');
     const FailedAuthorization   = require('./controller/FailedAuthorization');
-    const AccessToken           = require('./controller/AccessToken');
+    const Token                 = require('./controller/Token');
     const Subject               = require('./controller/Subject');
     const Role                  = require('./controller/Role');
     const ServiceToken          = require('./controller/ServiceToken');
@@ -51,6 +51,7 @@
             this.autoLoad('resource');
             this.autoLoad('service');
             this.autoLoad('subjectType');
+            this.autoLoad('accessToken');
         }
 
 
@@ -87,7 +88,7 @@
 
         afterLoad() {
             this.registerResource(new Authorization(this.resourceControllerOptions));
-            this.registerResource(new AccessToken(this.resourceControllerOptions));
+            this.registerResource(new Token(this.resourceControllerOptions));
             this.registerResource(new Subject(this.resourceControllerOptions));
             this.registerResource(new Role(this.resourceControllerOptions));
             this.registerResource(new ServiceToken(this.resourceControllerOptions));
