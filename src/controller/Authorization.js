@@ -13,6 +13,10 @@
 
 
 
+    const debug = process.argv.includes('--debug-permissions')
+
+
+
     module.exports = class Authorization extends ResourceController {
 
 
@@ -47,12 +51,28 @@
             const actionFilter      = {};
 
 
+            if (debug) log.debug(`Incoming request for token ${request.resourceId} ...`);
             if (!type.string(request.resourceId) || request.resourceId.length !== 64) response.forbidden('invalid_accessToken', `The accesToken provided is invalid!`);
 
 
+            if (debug) log.info(`Loading permissions for token ${request.resourceId} ...`);
             this.authorizationLoader.load(request.resourceId).then((permission) => {
-                if (permission) response.ok(Object.assign(permission.getData()));
-                else response.notFound(`Failed to load permissions for ${request.resourceId}!`);
+                if (permission) {
+                    const data = permission.getData();
+
+                    if (debug) {
+                        log.success(`Permissions for token ${request.resourceId} loaded:`);
+                        log.info(`Roles loaded: ${data && data.roles ? data.roles.map(r => r.identifier).join(', ') : ''}`);
+                        if (data && data.subject) log.info(`Subject: type=${data.subject.type}, subjectId=${data.subject.id}, internalSubjectId=${data.subject.internalId}${data.subject.data && data.subject.data.serviceName ? `, serviceName=${data.subject.data.serviceName}`: ''}${data.subject.data && data.subject.data.tenantIdentifier ? `, tenantIdentifier=${data.subject.data.tenantIdentifier}`: ''}`);
+                    }
+
+                    response.ok(Object.assign({}, data));
+                }
+                else {
+                    if (debug) log.warn(`Failed to load permissions for token ${request.resourceId}!`);
+
+                    response.notFound(`Failed to load permissions for ${request.resourceId}!`);
+                }
             }).catch(err => response.error('permission_loader_error', `Failed to load permissions!`, err));
         }
 

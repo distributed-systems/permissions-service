@@ -35,6 +35,11 @@
         }
 
 
+        setInternalSubjectId(id) {
+            this.data.subject.internalId = id;
+        }
+
+
         setInfo(info) {
             if (typeof info === 'object' && info !== null) this.data.subject.data = info;
         }

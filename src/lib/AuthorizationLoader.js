@@ -93,6 +93,7 @@
 
                             permission.setToken(accessToken.token);
                             permission.setId(subject.subjectId);
+                            permission.setInternalSubjectId(subject.id);
 
 
                             // subject info
