@@ -52,6 +52,7 @@
             this.autoLoad('service');
             this.autoLoad('subjectType');
             this.autoLoad('accessToken');
+            this.autoLoad('role_capability');
         }
 
 
