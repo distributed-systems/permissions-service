@@ -13,8 +13,8 @@
     create table "subjectType" (
           "id"                          serial not null
         , "identifier"                  varchar(50) not null
-        , "service"                     varchar(200) not null
-        , "resource"                    varchar(200) not null
+        , "service"                     varchar(200)
+        , "resource"                    varchar(200)
         , "fetchInfo"                   boolean not null default false
         , constraint "subjectType_pk"
             primary key ("id")
@@ -25,7 +25,7 @@
     create table "subject" (
           "id"                          serial not null
         , "id_subjectType"              int not null
-        , "subjectId"                   int not null
+        , "subjectId"                   int
         , constraint "subject_pk"
             primary key ("id")
         , constraint "subject_unique_subject"

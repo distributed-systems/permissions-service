@@ -14,3 +14,11 @@
     drop table "valueType" cascade;
     drop table "comparator" cascade;
 
+
+    alter table "subjectType" alter column "service" drop not null;
+    alter table "subjectType" alter column "resource" drop not null;
+    
+    alter table "subject" alter column "subjectId" drop not null;
+    alter table "subject" drop column "id_rateLimitBucket";
+
+    insert into "subjectType" ("identifier") values ('externalService');
