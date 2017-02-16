@@ -53,6 +53,7 @@
             this.autoLoad('subjectType');
             this.autoLoad('accessToken');
             this.autoLoad('role_capability');
+            this.autoLoad('group_role');
         }
 
 

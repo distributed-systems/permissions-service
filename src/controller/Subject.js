@@ -1,9 +1,9 @@
 (function() {
     'use strict';
 
-    const distributed           = require('distributed-prototype');
-    const ResourceController    = distributed.ResourceController;
-    const RelationalRequest     = distributed.RelationalRequest;
+    const distributed                   = require('distributed-prototype');
+    const RelatedResourceController     = distributed.RelatedResourceController;
+    const RelationalRequest             = distributed.RelationalRequest;
 
 
     const log                   = require('ee-log');
@@ -11,17 +11,19 @@
 
 
 
-    module.exports = class Subject extends ResourceController {
+    module.exports = class Subject extends RelatedResourceController {
 
 
         constructor(options) {
-            super('subject');
+            super(options, 'subject');
 
             // db from the service
             this.db = options.db;
 
             // permissions listings
             this.enableAction('createOrUpdateOne');
+            this.enableAction('list');
+            this.enableAction('listOne');
         }
 
 
