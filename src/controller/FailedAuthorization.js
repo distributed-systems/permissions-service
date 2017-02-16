@@ -26,8 +26,8 @@
 
 
             this.cache = new Cachd({
-                  ttl: 3600*1000
-                , maxLength: 10000
+                  ttl: 3600*1000*24
+                , maxLength: 2000
                 , removalStrategy: 'oldest'
             });
         }
