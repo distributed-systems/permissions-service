@@ -26,8 +26,11 @@
           "id"                          serial not null
         , "id_subjectType"              int not null
         , "subjectId"                   int
+        , "identifier"                  varchar(50)
         , constraint "subject_pk"
             primary key ("id")
+        , constraint "subject_unique_identifier"
+            unique ("id_subjectType", "identifier")
         , constraint "subject_unique_subject"
             unique ("id_subjectType", "subjectId")
         , constraint "subject_fk_subjectType"

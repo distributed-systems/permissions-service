@@ -59,13 +59,19 @@
 
                     // check for the subject
                     return Promise.resolve().then(() => {
-                        if (!request.data.id) return Promise.resolve();
-                        else {
+                        if (request.data.identifier) {
+                            return transaction.subject({
+                                  subjectType   : subjectType
+                                , identifier    : request.data.identifier
+                            }).getGroup('*').findOne();
+                        } 
+                        else if (request.data.id) {
                             return transaction.subject({
                                   subjectType   : subjectType
                                 , subjectId     : request.data.id
                             }).getGroup('*').findOne();
                         }
+                        else return Promise.resolve();
                     }).then((subject) => {
                         if (subject) return Promise.resolve(subject);
                         else return new transaction.subject({subjectType: subjectType, subjectId: request.data.id}).save();
