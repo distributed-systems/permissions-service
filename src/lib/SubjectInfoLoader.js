@@ -37,17 +37,21 @@
             if (this.cache.has(cacheId)) return this.cache.get(cacheId);
             else {
                 const promise = new Promise((resolve, reject) => {
-                    new RelationalRequest({
-                          action        : 'listOne'
-                        , service       : service
-                        , resource      : resource
-                        , resourceId    : subjectId
-                    }).send(this).then((response) => {
-                        if (response.status === 'ok') {
-                            if (response.hasObjectData()) resolve(response.data);
-                            else resolve({});
-                        } else reject(new Error(`Failed to load subject info from ${service}/${resource} for subject ${type}:${subjectId}!`));
-                    });
+                    if (!subjectId) resolve({});
+                    else {
+                        new RelationalRequest({
+                              action        : 'listOne'
+                            , service       : service
+                            , resource      : resource
+                            , resourceId    : subjectId
+                        }).send(this).then((response) => {
+                            if (response.status === 'ok') {
+                                if (response.hasObjectData()) resolve(response.data);
+                                else resolve({});
+                            } else if (response.status === 'notFound') resolve({});
+                            else reject(new Error(`Failed to load subject info from ${service}/${resource} for subject ${type}:${subjectId}!`));
+                        });
+                    }
                 }).catch((err) => {
 
                     // remove from cache

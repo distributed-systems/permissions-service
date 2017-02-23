@@ -55,7 +55,7 @@
                         else return new transaction.group({identifier: groupName}).save();
                     });
                 })).then((groups) => {
-
+                    
 
                     // check for the subject
                     return Promise.resolve().then(() => {
@@ -74,9 +74,16 @@
                         else return Promise.resolve();
                     }).then((subject) => {
                         if (subject) return Promise.resolve(subject);
-                        else return new transaction.subject({subjectType: subjectType, subjectId: request.data.id}).save();
+                        else return new transaction.subject({
+                              subjectType   : subjectType
+                            , subjectId     : request.data.id
+                            , identifier    : request.data.identifier
+                        }).save();
                     }).then((subject) => {
 
+
+                        // update identifier
+                        subject.identifier = request.data.identifier;
 
                         // add the groups
                         groups.forEach((group) => {
