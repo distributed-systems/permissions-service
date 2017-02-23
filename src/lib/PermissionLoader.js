@@ -44,7 +44,7 @@
                         if (permission) {
                             return this.resourceLoader.load(permission.id_resource).then((resource) => {
                                 return this.actionLoader.load(permission.id_action).then((action) => {
-                                    resolve({
+                                    return Promise.resolve({
                                           service   : resource.serviceIdentifier
                                         , resource  : resource.identifier
                                         , action    : action
@@ -52,12 +52,12 @@
                                     });
                                 });
                             });
-                        } else resolve();
-                    }).catch(reject);
+                        } else return Promise.resolve();
+                    }).then(resolve).catch(reject);
                 }).catch((err) => {
 
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(id);
 
                     return Promise.reject(err);
                 });

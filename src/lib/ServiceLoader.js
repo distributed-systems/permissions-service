@@ -42,9 +42,8 @@
                         else return resolve();
                     }).catch(reject);
                 }).catch((err) => {
-
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(id);
 
                     return Promise.reject(err);
                 });

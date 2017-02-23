@@ -59,7 +59,7 @@
                 const promise = new Promise((resolve, reject) => {
 
                     // get from db
-                    this.db.role(['identifier', 'id_rateLimit'], {
+                    this.db.role(['identifier'], {
                         id: id
                     }).fetchRole_capability('*').fetchRole_permission('*').raw().findOne().then((dbRole) => {
                         if (dbRole) {
@@ -95,14 +95,14 @@
                                 }
                             }).then(() => {
 
-                                resolve(role);
+                                return Promise.resolve(role);
                             });
-                        } else resolve();
-                    }).catch(reject);
+                        } else return Promise.resolve();
+                    }).then(resolve).catch(reject);
                 }).catch((err) => {
 
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(id);
 
                     return Promise.reject(err);
                 });

@@ -52,7 +52,7 @@
 
 
             if (debug) log.debug(`Incoming request for token ${request.resourceId} ...`);
-            if (!type.string(request.resourceId) || request.resourceId.length !== 64) response.forbidden('invalid_accessToken', `The accesToken provided is invalid!`);
+            if (!type.string(request.resourceId) || request.resourceId.length !== 64) return response.forbidden('invalid_accessToken', `The accesToken provided is invalid!`);
 
 
             if (debug) log.info(`Loading permissions for token ${request.resourceId} ...`);

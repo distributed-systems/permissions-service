@@ -39,18 +39,18 @@
                     // get from db
                     this.db.subjectType(['identifier', 'service', 'resource', 'fetchInfo'], {id: id}).raw().findOne().then((subjectType) => {
                         if (subjectType) {
-                            resolve({
+                            return Promise.resolve({
                                   identifier    : subjectType.identifier
                                 , service       : subjectType.service
                                 , resource      : subjectType.resource
                                 , fetchInfo     : !!subjectType.fetchInfo
                             });
-                        } else resolve();
-                    }).catch(reject);
+                        } else return Promise.resolve();
+                    }).then(resolve).catch(reject);
                 }).catch((err) => {
 
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(id);
 
                     return Promise.reject(err);
                 });

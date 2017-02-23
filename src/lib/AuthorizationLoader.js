@@ -115,10 +115,10 @@
                             }).then(() => {
 
 
-                                resolve(permission);
+                                return Promise.resolve(permission);
                             });
-                        } else resolve();            
-                    }).catch(reject);
+                        } else return Promise.resolve();            
+                    }).then(resolve).catch(reject);
                 }).catch((err) => {
 
                     // remove from cache

@@ -65,15 +65,15 @@
                                     });
                                 })).then(() => {
 
-                                    resolve(group);
+                                    return Promise.resolve(group);
                                 });
                             }
-                        } else resolve();
-                    }).catch(reject);
+                        } else return Promise.resolve();
+                    }).then(resolve).catch(reject);
                 }).catch((err) => {
 
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(id);
 
                     return Promise.reject(err);
                 });

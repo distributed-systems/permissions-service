@@ -44,17 +44,17 @@
                     this.db.resource(['id_service', 'identifier'], {id: id}).findOne().then((resource) => {
                         if (resource) {
                             return this.serviceLoader.load(resource.id_service).then((identifier) => {
-                                resolve({
+                                return Promise.resolve({
                                       identifier: resource.identifier
                                     , serviceIdentifier: identifier
                                 });
                             });
-                        } else resolve();
-                    }).catch(reject);
+                        } else return Promise.resolve();
+                    }).then(resolve).catch(reject);
                 }).catch((err) => {
 
                     // remove from cache
-                    this.cache.remove(token);
+                    this.cache.remove(id);
 
                     return Promise.reject(err);
                 });

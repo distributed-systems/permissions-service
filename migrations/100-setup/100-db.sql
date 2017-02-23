@@ -92,7 +92,6 @@
 
     create table "role" (
           "id"                          serial not null
-        , "id_rateLimit"                int
         , "identifier"                  varchar(50) not null
         , "created"                     timestamp without time zone not null default now()
         , "updated"                     timestamp without time zone not null default now()
@@ -101,11 +100,6 @@
             primary key ("id")
         , constraint "role_unique_identifier"
             unique ("identifier")
-        , constraint "role_fk_rateLimit"
-            foreign key ("id_rateLimit")
-            references "rateLimit"("id")
-            on update cascade
-            on delete restrict
     );
 
     create table "group_role" (
