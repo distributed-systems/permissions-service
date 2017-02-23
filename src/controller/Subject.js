@@ -59,16 +59,16 @@
 
                     // check for the subject
                     return Promise.resolve().then(() => {
-                        if (request.data.identifier) {
-                            return transaction.subject({
-                                  subjectType   : subjectType
-                                , identifier    : request.data.identifier
-                            }).getGroup('*').findOne();
-                        } 
-                        else if (request.data.id) {
+                        if (request.data.id) {
                             return transaction.subject({
                                   subjectType   : subjectType
                                 , subjectId     : request.data.id
+                            }).getGroup('*').findOne();
+                        }
+                        else if (request.data.identifier) {
+                            return transaction.subject({
+                                  subjectType   : subjectType
+                                , identifier    : request.data.identifier
                             }).getGroup('*').findOne();
                         }
                         else return Promise.resolve();
