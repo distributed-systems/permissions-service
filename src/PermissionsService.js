@@ -55,6 +55,7 @@
             this.autoLoad('role_capability');
             this.autoLoad('group_role');
             this.autoLoad('role_permission');
+            this.autoLoad('subject_group');
         }
 
 

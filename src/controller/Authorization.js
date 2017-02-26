@@ -31,6 +31,7 @@
             this.enableAction('list');
             this.enableAction('listOne');
             this.enableAction('createOne');
+            this.enableAction('delete');
 
             
             this.authorizationLoader = new AuthorizationLoader({
@@ -39,6 +40,25 @@
                 , Related: this.Related
             });
         }
+
+
+
+
+
+
+        /**
+        * empteis all caches
+        */
+        delete(request, response) {
+            this.authorizationLoader = new AuthorizationLoader({
+                  gateway: this
+                , db: this.db
+                , Related: this.Related
+            });
+
+            response.ok();
+        }
+
 
 
 

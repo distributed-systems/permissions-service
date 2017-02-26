@@ -47,7 +47,7 @@
 
 
                 // check for the group(s)
-                return Promise.all((request.data.groups || [request.data.group]).map((groupName) => {
+                return Promise.all((request.data.groups || [request.data.group]).filter(g => !!g).map((groupName) => {
                     return transaction.group({
                         identifier: groupName
                     }).findOne().then((group) => {
