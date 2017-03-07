@@ -82,7 +82,7 @@
 
                     if (debug) {
                         log.success(`Permissions for token ${request.resourceId} loaded:`);
-                        log.info(`Roles loaded: ${data && data.roles ? data.roles.map(r => r.identifier).join(', ') : ''}`);
+                        log.info(`Roles loaded: ${data && data.roles ? data.roles.map(r => `${r.identifier}(${r.id})`).join(', ') : ''}`);
                         if (data && data.subject) log.info(`Subject: type=${data.subject.type}, subjectId=${data.subject.id}, internalSubjectId=${data.subject.internalId}${data.subject.data && data.subject.data.serviceName ? `, serviceName=${data.subject.data.serviceName}`: ''}${data.subject.data && data.subject.data.tenantIdentifier ? `, tenantIdentifier=${data.subject.data.tenantIdentifier}`: ''}`);
                     }
 
