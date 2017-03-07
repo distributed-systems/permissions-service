@@ -41,6 +41,33 @@
             const items = Array.from(this.cache).map(item => Object.assign({}, item));
             items.forEach(item => item.permissions = Array.from(item.permissions.values()));
 
+
+            items.sort((a, b) => {
+                if (a.role > b.role) return 1;
+                if (a.role < b.role) return -1;
+                return 0;
+            });
+
+
+            items.forEach((set) => {
+                set.permissions.sort((a, b) => {
+
+                    // first level
+                    if (a.service > b.service) return 1;
+                    if (a.service < b.service) return -1;
+
+                    // second level
+                    if (a.resource > b.resource) return 1;
+                    if (a.resource < b.resource) return -1;
+
+                    // third level
+                    if (a.action > b.action) return 1;
+                    if (a.action < b.action) return -1;
+                    
+                    return 0;
+                });
+            });
+
             response.ok(items);
         }
 
