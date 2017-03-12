@@ -42,6 +42,10 @@
             items.forEach(item => item.permissions = Array.from(item.permissions.values()));
 
 
+            // a map used to record which roles require which permissions
+            const permissionsMap = new Map();
+
+
             items.sort((a, b) => {
                 if (a.role > b.role) return 1;
                 if (a.role < b.role) return -1;
@@ -65,6 +69,22 @@
                     if (a.action < b.action) return -1;
                     
                     return 0;
+                });
+
+
+                // we'd like to know which roles require each permission
+                // we're adding this here to the json response
+                set.permissions.forEach((permissionRequest) => {
+                    const key = `${permissionRequest.service}/${permissionRequest.resource}:${permissionRequest.action}`;
+
+                    if (!permissionsMap.has(key)) permissionsMap.set(key, []);
+                    const roles = permissionsMap.get(key);
+
+                    // add the current role
+                    roles.push(set.role);
+
+                    // add the same array to all of those permissions
+                    permissionRequest.requestingRoles = roles.join(', ');
                 });
             });
 
