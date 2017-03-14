@@ -85,9 +85,13 @@
                         // update identifier
                         subject.identifier = request.data.identifier;
 
+                        // remove existing groups
+                        subject.group.clear();
+
+
                         // add the groups
                         groups.forEach((group) => {
-                            if (!subject.group.some(g => g.identifier === group.identifier)) subject.group.push(group);
+                            subject.group.push(group);
                         });
 
                         
