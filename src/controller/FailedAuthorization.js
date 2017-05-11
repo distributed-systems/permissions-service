@@ -22,6 +22,7 @@
             // permissions listings
             this.enableAction('list');
             this.enableAction('create');
+            this.enableAction('delete');
 
 
 
@@ -30,6 +31,21 @@
                 , maxLength: 2000
                 , removalStrategy: 'oldest'
             });
+        }
+
+
+
+
+
+
+        delete(request, response) {
+            this.cache = new Cachd({
+                  ttl: 3600*1000*24
+                , maxLength: 2000
+                , removalStrategy: 'oldest'
+            });
+
+            response.noContent();
         }
 
 
