@@ -85,7 +85,7 @@
                         // there you go
                         response.created(accessToken.token);
                     });
-                } else response.notFound(`ailed to create accessToken, the ${request.data.type} ${request.data.id} was not registered as subject!`);
+                } else response.notFound(`Failed to create accessToken, the ${request.data.type} ${request.data.id} was not registered as subject!`);
             }).catch(err => response.error('creation_error', `Failed to create permission!`, err));
         }
     }

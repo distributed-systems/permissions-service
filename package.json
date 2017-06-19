@@ -1,7 +1,7 @@
 {
       "name"                        : "permissions-service"
     , "description"                 : "Permissions Service for Distributed"
-    , "version"                     : "2.7.0"
+    , "version"                     : "2.7.1"
     , "homepage"                    : "https://github.com/distributed-systems/permissions-service"
     , "author"                      : "Michael van der Weg <michael@joinbox.com> (http://joinbox.com/)"
     , "repository": {
