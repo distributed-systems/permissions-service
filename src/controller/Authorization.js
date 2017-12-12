@@ -47,7 +47,7 @@
 
 
         /**
-        * empteis all caches
+        * empties all caches
         */
         delete(request, response) {
             this.authorizationLoader = new AuthorizationLoader({
