@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "cachd": "^1.0.0",
-        "distributed-prototype": "^2.28.8",
+        "distributed-prototype": "^2.28.9",
         "ee-log": "^1.1.0",
         "ee-types": "^2.1.4",
         "inquirer": "^1.2.3",
