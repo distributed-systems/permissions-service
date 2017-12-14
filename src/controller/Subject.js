@@ -24,6 +24,7 @@
             this.enableAction('createOrUpdateOne');
             this.enableAction('list');
             this.enableAction('listOne');
+            this.enableAction('describe');
         }
 
 

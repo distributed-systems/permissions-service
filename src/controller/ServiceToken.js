@@ -21,6 +21,7 @@
             this.Related = options.Related;
 
             this.enableAction('createOrUpdate');
+            this.enableAction('describe');
         }
 
 
